@@ -1,23 +1,32 @@
 {
   "name": "todo-bot",
   "version": "1.0.0",
-  "description": "Простой Telegram бот для управления задачами",
-  "main": "bot.js",
+  "description": "Простой Telegram бот и веб-приложение для управления задачами на SQLite",
+  "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon bot.js",
-    "setup-db": "mysql -u root -p < db.sql"
+    "dev": "nodemon index.js",
+    "setup-db": "node setup-db.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
-    "mysql2": "^3.14.1",
-    "node-telegram-bot-api": "^0.61.0"
+    "node-telegram-bot-api": "^0.61.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.0"
   },
-  "keywords": ["telegram", "bot", "todo", "nodejs"],
+  "keywords": [
+    "telegram",
+    "bot",
+    "todo",
+    "nodejs",
+    "sqlite"
+  ],
   "author": "Your Name",
   "license": "MIT"
 }

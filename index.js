@@ -4,7 +4,8 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import mysql from 'mysql2/promise';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import querystring from 'querystring';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
@@ -15,50 +16,35 @@ const __dirname = path.dirname(__filename);
 const PORT = 4000;
 
 // --- Настройки базы данных ---
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'todolist',
-};
+async function getDbConnection() {
+  return open({
+    filename: './todolist.sqlite', // путь к файлу SQLite
+    driver: sqlite3.Database
+  });
+}
 
 // --- Простое хранилище сессий в памяти ---
 const sessions = {};
 
 // --- Операции с пользователями и сессиями ---
 async function registerUser(username, password) {
+  const db = await getDbConnection();
   const hash = await bcrypt.hash(password, 10);
   const token = crypto.randomUUID();
-  const connection = await mysql.createConnection(dbConfig);
-  try {
-    await connection.execute(
-      'INSERT INTO users (username, password_hash, auth_token) VALUES (?, ?, ?)',
-      [username, hash, token]
-    );
-  } finally {
-    await connection.end();
-  }
+  await db.run(
+    'INSERT INTO users (username, password_hash, auth_token) VALUES (?, ?, ?)',
+    username, hash, token
+  );
   return token;
 }
 
 async function authenticateUser(username, password) {
-  const connection = await mysql.createConnection(dbConfig);
-  const [rows] = await connection.execute(
+  const db = await getDbConnection();
+  const user = await db.get(
     'SELECT * FROM users WHERE username = ?',
-    [username]
+    username
   );
-  await connection.end();
-  
-  if (rows.length === 0) return null;
-  
-  const user = rows[0];
-  
-  // Проверяем, есть ли password_hash (пользователь зарегистрирован через веб)
-  if (!user.password_hash) {
-    // Пользователь зарегистрирован через Telegram бота - нет пароля для веб-входа
-    return null;
-  }
-  
+  if (!user || !user.password_hash) return null;
   const valid = await bcrypt.compare(password, user.password_hash);
   return valid ? user : null;
 }
@@ -107,52 +93,35 @@ function getSession(req, res) {
 
 // --- Операции с задачами ---
 async function addListItem(text, userId) {
-  const connection = await mysql.createConnection(dbConfig);
-  try {
-    await connection.execute(
-      'INSERT INTO items (text, user_id) VALUES (?, ?)',
-      [text, userId]
-    );
-  } finally {
-    await connection.end();
-  }
+  const db = await getDbConnection();
+  await db.run(
+    'INSERT INTO items (text, user_id) VALUES (?, ?)',
+    text, userId
+  );
 }
 
 async function deleteListItem(id, userId) {
-  const connection = await mysql.createConnection(dbConfig);
-  try {
-    await connection.execute(
-      'DELETE FROM items WHERE id = ? AND user_id = ?',
-      [id, userId]
-    );
-  } finally {
-    await connection.end();
-  }
+  const db = await getDbConnection();
+  await db.run(
+    'DELETE FROM items WHERE id = ? AND user_id = ?',
+    id, userId
+  );
 }
 
 async function editListItem(id, text, userId) {
-  const connection = await mysql.createConnection(dbConfig);
-  try {
-    await connection.execute(
-      'UPDATE items SET text = ? WHERE id = ? AND user_id = ?',
-      [text, id, userId]
-    );
-  } finally {
-    await connection.end();
-  }
+  const db = await getDbConnection();
+  await db.run(
+    'UPDATE items SET text = ? WHERE id = ? AND user_id = ?',
+    text, id, userId
+  );
 }
 
 async function retrieveListItems(userId) {
-  const connection = await mysql.createConnection(dbConfig);
-  try {
-    const [rows] = await connection.execute(
-      'SELECT id, text FROM items WHERE user_id = ?',
-      [userId]
-    );
-    return rows;
-  } finally {
-    await connection.end();
-  }
+  const db = await getDbConnection();
+  return db.all(
+    'SELECT id, text FROM items WHERE user_id = ?',
+    userId
+  );
 }
 
 function renderTemplate(filePath, data = {}) {
