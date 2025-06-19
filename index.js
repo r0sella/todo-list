@@ -213,7 +213,7 @@ const server = http.createServer(async (req, res) => {
     // Сбрасываем cookie и делаем редирект
     res.writeHead(302, {
         'Set-Cookie': 'sid=; Max-Age=0; Path=/',
-        'Location': 'http://localhost:4000/login'
+        'Location': 'https://todolist-jc1p.onrender.com'
     });
     res.end();
     return;
