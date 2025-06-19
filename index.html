@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+      .btn {
+      display: inline-block;
+      padding: 6px 16px;
+      margin: 2px 4px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #fff;
+      background: #1976d2;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.07);
+    }
+    .btn:hover {
+      background: #1565c0;
+    }
+    .btn-delete {
+      background: #e53935;
+    }
+    .btn-delete:hover {
+      background: #b71c1c;
+    }
+    .btn-edit {
+      background: #43a047;
+    }
+    .btn-edit:hover {
+      background: #2e7d32;
+    }
+    body {
+      background: #f2f5fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 32px 24px 24px 24px;
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 2rem;
+      color: #2b2d42;
+      letter-spacing: 1px;
+    }
+    .user-bar {
+      text-align: right;
+      margin-bottom: 22px;
+      color: #444;
+      font-size: 1rem;
+    }
+    .user-bar a {
+      color: #3a7afe;
+      text-decoration: none;
+      margin-left: 14px;
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px 7px;
+      text-align: left;
+    }
+    th {
+      background: #f0f4fa;
+      color: #555;
+      font-weight: 600;
+      border-bottom: 2px solid #e6eaf0;
+    }
+    tr:nth-child(even) td {
+      background: #f9fafc;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .actions button, .actions form {
+      display: inline;
+    }
+    button {
+      background: #3a7afe;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 4px;
+      transition: background 0.2s;
+    }
+    button:last-child {
+      margin-right: 0;
+    }
+    button:hover {
+      background: #2563d6;
+    }
+    .delete-btn {
+      background: #f44336;
+    }
+    .delete-btn:hover {
+      background: #c62828;
+    }
+    .edit-btn {
+      background: #ff9800;
+    }
+    .edit-btn:hover {
+      background: #e65100;
+    }
+    form.add-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    form.add-form input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 1rem;
+      border: 1px solid #cfd8dc;
+      border-radius: 5px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    form.add-form input[type="text"]:focus {
+      border: 1.5px solid #3a7afe;
+    }
+    .edit-form {
+      display: flex;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+    }
+    .edit-form input[type="text"] {
+      flex: 1;
+      padding: 6px;
+      font-size: 1rem;
+      border: 1px solid #cfd8dc;
+      border-radius: 5px;
+      outline: none;
+    }
+    @media (max-width: 600px) {
+      .container {
+        max-width: 97vw;
+        padding: 10vw 2vw 7vw 2vw;
+      }
+      h1 {
+        font-size: 1.2rem;
+      }
+      .user-bar {
+        font-size: 0.97rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <div class="user-bar">
+      Привет, {{username}}!
+      <a href="/logout">Выйти</a>
+    </div>
+    <div class="token-block">
+      Ваш токен для Telegram(@todolist53336_bot): <span class="token-value">{{auth_token}}</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Задача</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{rows}}
+      </tbody>
+    </table>
+    <form class="add-form" method="POST" action="/add">
+      <input type="text" name="text" placeholder="Введите новую задачу" required>
+      <button type="submit">Добавить</button>
+    </form>
+  </div>
+  <script>
+    function showEditForm(id) {
+      document.querySelectorAll('.edit-form').forEach(f => f.style.display = 'none');
+      document.querySelectorAll('.task-text').forEach(t => t.style.display = '');
+      document.getElementById('edit-form-' + id).style.display = 'flex';
+      document.getElementById('task-text-' + id).style.display = 'none';
+      return false;
+    }
+    function hideEditForm(id) {
+      document.getElementById('edit-form-' + id).style.display = 'none';
+      document.getElementById('task-text-' + id).style.display = '';
+      return false;
+    }
+  </script>
+</body>
+</html>

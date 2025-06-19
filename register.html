@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #f2f5fa; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; min-height: 100vh; }
+    .login-container { background: #fff; max-width: 340px; margin: 60px auto; padding: 32px 28px 24px 28px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    h1 { margin-top: 0; margin-bottom: 18px; font-size: 2rem; color: #2b2d42; text-align: center; }
+    form { display: flex; flex-direction: column; gap: 14px; }
+    input[type="text"], input[type="password"] { padding: 10px; font-size: 1rem; border: 1px solid #cfd8dc; border-radius: 6px; outline: none; transition: border 0.2s; }
+    input[type="text"]:focus, input[type="password"]:focus { border: 1.5px solid #3a7afe; }
+    button { background: #3a7afe; color: #fff; border: none; border-radius: 6px; padding: 10px 0; font-size: 1rem; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #2563d6; }
+    .register-link { display: block; margin-top: 16px; text-align: center; color: #3a7afe; text-decoration: none; font-weight: 500; }
+    .register-link:hover { text-decoration: underline; }
+    @media (max-width: 500px) { .login-container { max-width: 97vw; padding: 8vw 4vw 7vw 4vw; } h1 { font-size: 1.2rem; } }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Регистрация</h1>
+    <form method="POST" action="/register">
+      <input type="text" name="username" placeholder="Логин" required>
+      <input type="password" name="password" placeholder="Пароль" required>
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+    <a class="register-link" href="/login">Вход</a>
+  </div>
+</body>
+</html>
